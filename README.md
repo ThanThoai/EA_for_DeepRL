@@ -1,2 +1,3 @@
-# darkrai17071998-gmail.com
-LeetCode_Interview
+# Than Thoai
+
+Project study in MSO-LAB
