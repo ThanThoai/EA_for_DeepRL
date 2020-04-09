@@ -5,7 +5,7 @@ from gym.utils import seeding
 import numpy as np 
 
 
-class CartPole(gym.Env):
+class CartPoleEnv(gym.Env):
     def __init__(self):
         self.gravity = 9.8 
         self.masscart = 1.0
@@ -160,4 +160,4 @@ if __name__ == '__main__':
 
     env.close()
 
-print(total_reward)
+    print(total_reward)

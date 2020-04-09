@@ -4,11 +4,9 @@ import numpy as np
 import gym 
 
 class MFEA:
-    def __init__(self, tasks, logger, time_logger, num_pop, num_gen, sbxdi, pmdi, rmp):
+    def __init__(self, tasks, num_pop, num_gen, sbxdi, pmdi, rmp):
         self.tasks = tasks 
         self.num_task = len(tasks)
-        self.logger = logger
-        self.time_logger = time_logger
         self.num_pop = self.num_task * num_pop
         self.num_dim = max([task.dim for task in tasks])
         self.num_gen = num_gen
@@ -65,14 +63,14 @@ class MFEA:
         self.factorial_cost[self.num_pop:, :] = np.inf
         
         
-    def __call__(self):
+    def run(self):
         self.init_state()
         self.update()
         for gen in range(self.num_gen):
             permutation = np.random.permutation(self.num_pop)
             self.population[: self.num_pop] = self.population[: self.num_pop][permutation]
             self.skill_factor[: self.num_pop] = self.skill_factor[: self.num_pop][permutation]
-            self.factorial_cost[:, self.num_pop] = self.factorial_cost[:self.num_pop][permutation]
+            self.factorial_cost[:self.num_pop] = self.factorial_cost[:self.num_pop][permutation]
             
             if self.rmp == 0:
                 single_task_index = []
@@ -120,7 +118,8 @@ class MFEA:
             info = ",".join([str(gen),
                             ','.join(['%f' %_ for _ in best_fitness]),
                             ','.join(['%f' %_ for _ in mean_fitness])])
-            self.logger.info(info)
+            print('[INFO] %s' %info)
+            # self.logger.info(info)
         
         
         
