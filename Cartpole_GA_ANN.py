@@ -3,15 +3,20 @@ import numpy as np
 import random
 env = gym.make("CartPole-v1")
 shape_of_net = (4,
-                32,
-                16,
-                2)
+                8,
+                8,
+                1)
 num_layers = len(shape_of_net) - 1
 
 def softmax(x):
-    
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum()
+
+def sigmoid(x):
+    return 1.0 / (1 + np.exp(-x))
+
+def relu(x):
+    return np.maximum(0, x)
 
 class Agent:
     def __init__(self):
@@ -30,9 +35,9 @@ class Agent:
                 #ReLU
                 np.maximum(l,0,l)
         
-        l = softmax(l)
+        action = relu(l)
         
-        return np.argmax(l[0])
+        return int(action > 0.5)
 
 class Population:
     
