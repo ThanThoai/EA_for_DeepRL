@@ -59,6 +59,7 @@ class MLP(NeuralNetwork):
     def get_weights_biases(self) -> np.array:
         w_1 = self.weights_1.flatten()
         w_2 = self.weights_2.flatten()
+        print(np.concatenate((w_1, self.biases_1, w_2, self.biases_2), axis=0).shape)
         return np.concatenate((w_1, self.biases_1, w_2, self.biases_2), axis=0)
 
     def update_weights_biases(self, weights_biases: np.array) -> None:
@@ -284,7 +285,7 @@ def test_model(nn, file):
 if __name__ == '__main__':
     env = gym.make('CartPole-v1')
     env.seed(123)
-    train = False
+    train = True
     if train:
         POPULATION_SIZE = 100
         MAX_GENERATION = 100

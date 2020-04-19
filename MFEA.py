@@ -2,18 +2,38 @@
 
 import numpy as np
 import gym 
+from task import CartPole
 
 class MFEA:
-    def __init__(self, tasks, num_pop, num_gen, sbxdi, pmdi, rmp):
+    def __init__(self, tasks : CartPole, num_pop : int, num_gen : int, sbxdi : float, pmdi : float, rmp : float):
         self.tasks = tasks 
         self.num_task = len(tasks)
         self.num_pop = self.num_task * num_pop
-        self.num_dim = max([task.dim for task in tasks])
         self.num_gen = num_gen
         self.sbxdi = sbxdi
         self.pmdi = pmdi
         self.rmp = rmp
+        self.G_unified, self.num_dim, self.L_unified = self.get_G_unified()
         
+
+    def get_G_unified(self):
+        G_unified = {}
+        dim = 0
+        L_unified = max([task.dim for task in self.tasks])
+        for i in range(L_unified):
+            G_unified["l%d" %i] = 0
+        for l in range(L_unified):
+            for k in range(self.num_task):
+                if l == self.tasks[k].dim - 1:
+                    if self.tasks[k].param_lst[l] > G_unified["l%d" %(L_unified - 1)]:
+                        G_unified["l%d" %(L_unified - 1)] = self.tasks[k].param_lst[l]
+                elif l < self.tasks[k].dim:
+                    if self.tasks[k].param_lst[l] > G_unified["l%d" %l]:
+                        G_unified["l%d" %l] = self.tasks[k].param_lst[l]
+        for key in G_unified.keys():
+            dim += G_unified[key]
+        return G_unified, dim, L_unified
+
     def init_state(self):
         self.population = np.random.rand(2 * self.num_pop, self.num_dim)
         self.skill_factor = np.array([i % self.num_task for i in range(2 * self.num_pop)])
@@ -53,7 +73,7 @@ class MFEA:
     def update(self):
         for i in range(2 * self.num_pop):
             sf = self.skill_factor[i]
-            self.factorial_cost[i,sf] = self.tasks[sf].fitness(self.population[i])
+            self.factorial_cost[i,sf] = self.tasks[sf].fitness(self.population[i], self.G_unified)
         self.scalar_fitness = self.find_scalar_fitness()
         
         sort_index = np.argsort(self.scalar_fitness[: : -1])
